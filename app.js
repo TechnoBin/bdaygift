@@ -160,8 +160,6 @@
   };
 
     // --- BACKGROUND MUSIC MEDIA CONTROLLER ---
-  let wasMusicPlayingBeforeVideo = false;
-
   function pauseMusicForVideo() {
     if (music && !music.paused) {
       wasMusicPlayingBeforeVideo = true;
@@ -183,7 +181,6 @@
             if (musicIcon) musicIcon.textContent = "♫";
           })
           .catch(() => {
-            // If browser autoplay restrictions block silent resumption, sync button UI state
             musicEnabled = false;
             if (musicToggle) musicToggle.classList.remove("music-playing");
             if (musicLabel) musicLabel.textContent = "Music OFF";
@@ -193,8 +190,9 @@
       wasMusicPlayingBeforeVideo = false;
     }
   }
+
   
-  // --- VIDEO LIGHTBOX HANDLER ---
+// --- VIDEO LIGHTBOX HANDLER ---
   function openVideoLightbox(src, title) {
     if (!src || !lightbox) return;
 
@@ -234,8 +232,6 @@
       isPushedState = true;
     }
   }
-
-
 
   // Attach click listener to video cards
   $$(".video-card").forEach((card) => {
