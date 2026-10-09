@@ -158,20 +158,50 @@
 
     originalCloseLightbox(fromPopState);
   };
-  
-  // --- VIDEO LIGHTBOX HANDLER ---
-    function openVideoLightbox(src, title) {
-    if (!src || !lightbox) return;
 
-    previousFocus = document.activeElement;
+    // --- BACKGROUND MUSIC MEDIA CONTROLLER ---
+  let wasMusicPlayingBeforeVideo = false;
 
-    // Check if background music is actively playing before pausing
-    if (musicEnabled && music && !music.paused) {
+  function pauseMusicForVideo() {
+    if (music && !music.paused) {
       wasMusicPlayingBeforeVideo = true;
       music.pause();
     } else {
       wasMusicPlayingBeforeVideo = false;
     }
+  }
+
+  function resumeMusicAfterVideo() {
+    if (wasMusicPlayingBeforeVideo && music) {
+      const playPromise = music.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            musicEnabled = true;
+            if (musicToggle) musicToggle.classList.add("music-playing");
+            if (musicLabel) musicLabel.textContent = "Music ON";
+            if (musicIcon) musicIcon.textContent = "♫";
+          })
+          .catch(() => {
+            // If browser autoplay restrictions block silent resumption, sync button UI state
+            musicEnabled = false;
+            if (musicToggle) musicToggle.classList.remove("music-playing");
+            if (musicLabel) musicLabel.textContent = "Music OFF";
+            if (musicIcon) musicIcon.textContent = "🔇";
+          });
+      }
+      wasMusicPlayingBeforeVideo = false;
+    }
+  }
+  
+  // --- VIDEO LIGHTBOX HANDLER ---
+  function openVideoLightbox(src, title) {
+    if (!src || !lightbox) return;
+
+    previousFocus = document.activeElement;
+
+    // Safely pause background music and save active playback state
+    pauseMusicForVideo();
 
     if (lightboxImage) lightboxImage.classList.add("hidden");
 
@@ -204,6 +234,7 @@
       isPushedState = true;
     }
   }
+
 
 
   // Attach click listener to video cards
@@ -443,10 +474,11 @@
     renderLightboxPhoto();
   }
 
-      function closeLightbox(fromPopState = false) {
+    
+    function closeLightbox(fromPopState = false) {
     if (!lightbox || lightbox.classList.contains("hidden")) return;
 
-    // Stop and reset video element
+    // Pause and clear video player
     const modalVideo = $("#lightboxVideo");
     if (modalVideo) {
       modalVideo.pause();
@@ -454,11 +486,8 @@
       modalVideo.classList.add("hidden");
     }
 
-    // Auto-resume background audio if it was playing prior to opening the video
-    if (wasMusicPlayingBeforeVideo && music) {
-      music.play().catch(() => {});
-      wasMusicPlayingBeforeVideo = false;
-    }
+    // Resume background audio and sync UI elements
+    resumeMusicAfterVideo();
 
     if (lightboxImage) lightboxImage.classList.remove("hidden");
 
