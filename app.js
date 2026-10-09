@@ -167,7 +167,7 @@
     passwordForm.addEventListener("submit", (event) => {
       event.preventDefault();
       const entered = passwordInput ? passwordInput.value : "";
-      if (entered === String(config.password ?? "love2026")) {
+      if (entered === String(config.password ?? "birthday")) {
         if (gateError) gateError.textContent = "";
         if (passwordInput) passwordInput.setAttribute("aria-invalid", "false");
         unlockSite();
