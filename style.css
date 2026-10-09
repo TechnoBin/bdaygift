@@ -312,3 +312,98 @@ em { color: var(--rose); font-weight: 500; }
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* --- EQUAL-SIZE VIDEO MEMORIES GRID --- */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 28px;
+}
+
+.video-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 9px 9px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+  text-align: left;
+  box-shadow: 0 12px 38px rgba(126, 77, 108, 0.09);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.video-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 45px rgba(126, 77, 108, 0.16);
+}
+
+.video-thumb-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3; /* Ensures all cards stay 100% EQUAL in height & width */
+  border-radius: 8px;
+  overflow: hidden;
+  background: #2a1b26;
+}
+
+.video-thumb-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Fits both portrait and landscape videos neatly */
+  pointer-events: none;
+}
+
+/* Play Badge Overlay */
+.play-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--rose);
+  font-size: 1.2rem;
+  display: grid;
+  place-items: center;
+  padding-left: 3px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.video-card:hover .play-badge {
+  transform: translate(-50%, -50%) scale(1.15);
+  background: #ffffff;
+  color: #e87a90;
+}
+
+.video-card-title {
+  display: block;
+  margin: 12px 7px 0;
+  color: var(--wine);
+  font-family: var(--serif);
+  font-size: 1.05rem;
+}
+
+/* Lightbox Video Element Styling */
+.lightbox-video {
+  max-width: 100%;
+  max-height: calc(100svh - 150px);
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+  outline: none;
+}
+
+@media (max-width: 640px) {
+  .video-grid {
+    grid-template-columns: 1fr; /* Single column on mobile for easy tapping */
+    gap: 16px;
+  }
+}
