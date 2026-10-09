@@ -53,6 +53,7 @@
   let previousFocus = null;
   let toastTimer = null;
   let musicEnabled = false;
+  let wasMusicPlayingBeforeVideo = false; // Tracks music state before video launch
   let candlesBlown = false;
   let isPushedState = false;
 
@@ -159,17 +160,19 @@
   };
   
   // --- VIDEO LIGHTBOX HANDLER ---
-  function openVideoLightbox(src, title) {
+    function openVideoLightbox(src, title) {
     if (!src || !lightbox) return;
 
     previousFocus = document.activeElement;
 
-    // Pause background music if playing
-    if (musicEnabled && music) {
+    // Check if background music is actively playing before pausing
+    if (musicEnabled && music && !music.paused) {
+      wasMusicPlayingBeforeVideo = true;
       music.pause();
+    } else {
+      wasMusicPlayingBeforeVideo = false;
     }
 
-    // Hide image element, create or show video player
     if (lightboxImage) lightboxImage.classList.add("hidden");
 
     let modalVideo = $("#lightboxVideo");
@@ -190,7 +193,6 @@
     if (lightboxCaption) lightboxCaption.textContent = title;
     if (lightboxCounter) lightboxCounter.textContent = "Video Clip";
 
-    // Hide photo prev/next buttons in video mode
     $("#lightboxPrev")?.classList.add("hidden");
     $("#lightboxNext")?.classList.add("hidden");
 
@@ -202,6 +204,7 @@
       isPushedState = true;
     }
   }
+
 
   // Attach click listener to video cards
   $$(".video-card").forEach((card) => {
@@ -440,10 +443,10 @@
     renderLightboxPhoto();
   }
 
-    function closeLightbox(fromPopState = false) {
+      function closeLightbox(fromPopState = false) {
     if (!lightbox || lightbox.classList.contains("hidden")) return;
 
-    // Pause and reset video player if open
+    // Stop and reset video element
     const modalVideo = $("#lightboxVideo");
     if (modalVideo) {
       modalVideo.pause();
@@ -451,7 +454,12 @@
       modalVideo.classList.add("hidden");
     }
 
-    // Restore image element for normal photo viewing
+    // Auto-resume background audio if it was playing prior to opening the video
+    if (wasMusicPlayingBeforeVideo && music) {
+      music.play().catch(() => {});
+      wasMusicPlayingBeforeVideo = false;
+    }
+
     if (lightboxImage) lightboxImage.classList.remove("hidden");
 
     lightbox.classList.add("hidden");
