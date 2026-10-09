@@ -27,7 +27,7 @@
   let musicEnabled = false;
   let candlesBlown = false;
   let openedSecrets = new Set();
-  let isPushedState = false; // Tracks browser history state for lightbox
+  let isPushedState = false;
 
   function safeText(value, fallback = "") {
     return typeof value === "string" && value.trim() ? value.trim() : fallback;
@@ -73,7 +73,7 @@
       img.decoding = "async";
       img.addEventListener("error", () => {
         img.removeAttribute("src");
-        img.alt = "Image unavailable — replace this photo in js/content.js";
+        img.alt = "Image unavailable — replace this photo in content.js";
         img.classList.add("image-unavailable");
         button.classList.add("photo-error");
       }, { once: true });
@@ -150,10 +150,13 @@
       mainSite.removeAttribute("inert");
     }
     document.body.classList.add("unlocked");
+    
+    // Ensure all revealed cards turn visible immediately on unlock
+    $$(".reveal").forEach((item) => item.classList.add("visible"));
+    
     initRevealObserver();
     createSparkles();
 
-    // Auto-start music on unlock click
     if (!musicEnabled) {
       toggleMusic();
     }
@@ -167,8 +170,10 @@
   if (passwordForm) {
     passwordForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      const entered = passwordInput ? passwordInput.value : "";
-      if (entered === String(config.password ?? "birthday")) {
+      const entered = passwordInput ? passwordInput.value.trim() : "";
+      const expectedPassword = String(config.password || "birthday");
+
+      if (entered === expectedPassword) {
         if (gateError) gateError.textContent = "";
         if (passwordInput) passwordInput.setAttribute("aria-invalid", "false");
         unlockSite();
@@ -193,7 +198,6 @@
     });
   }
 
-  // --- LIGHTBOX WITH BACK-BUTTON (HISTORY API) & SMOOTH SLIDE ---
   function openLightbox(index) {
     const photos = Array.isArray(config.photos) ? config.photos : [];
     if (!photos.length || !photos[index] || !lightbox) return;
@@ -205,7 +209,6 @@
     lightbox.classList.remove("hidden");
     document.body.style.overflow = "hidden";
 
-    // Push history state so physical browser/phone Back button closes the lightbox
     if (!isPushedState) {
       history.pushState({ lightboxOpen: true }, "");
       isPushedState = true;
@@ -220,7 +223,6 @@
     const photo = photos[activePhoto];
     if (!photo || !lightboxImage) return;
 
-    // Trigger smooth fade transition
     lightboxImage.classList.add("changing");
 
     const nextSrc = safeText(photo.src);
@@ -234,7 +236,7 @@
 
     preload.onerror = () => {
       lightboxImage.removeAttribute("src");
-      lightboxImage.alt = "This image could not be loaded. Replace its URL in js/content.js.";
+      lightboxImage.alt = "This image could not be loaded. Replace its URL in content.js.";
       lightboxImage.classList.remove("changing");
     };
 
@@ -272,7 +274,6 @@
       previousFocus.focus();
     }
 
-    // If closed via UI (X button, overlay click, ESC), sync the history state back
     if (!fromPopState && isPushedState) {
       isPushedState = false;
       history.back();
@@ -281,16 +282,15 @@
     }
   }
 
-  // Intercept back button / swipe-back gesture
   window.addEventListener("popstate", () => {
     if (lightbox && !lightbox.classList.contains("hidden")) {
-      closeLightbox(true); // Close lightbox via browser back
+      closeLightbox(true);
     }
   });
 
   const closeBtn = $("#lightboxClose");
   const prevBtn = $("#lightboxPrev");
-  const nextBtn = $("#lightboxNext");    if (closeBtn) closeBtn.addEventListener("click", () => closeLightbox(false));   if (prevBtn) prevBtn.addEventListener("click", () => moveLightbox(-1));   if (nextBtn) nextBtn.addEventListener("click", () => moveLightbox(1));    if (lightbox) {     lightbox.addEventListener("click", (event) => {       if (event.target === lightbox) closeLightbox(false);     });   }    document.addEventListener("keydown", (event) => {     if (!lightbox \vert{}\vert{} lightbox.classList.contains("hidden")) return;     if (event.key === "Escape") closeLightbox(false);     if (event.key === "ArrowLeft") moveLightbox(-1);     if (event.key === "ArrowRight") moveLightbox(1);   });    // Touch Swipe Gesture Support for Mobile   let touchStartX = 0;   if (lightbox) {     lightbox.addEventListener("touchstart", (e) => {       touchStartX = e.changedTouches[0].clientX;     }, { passive: true });      lightbox.addEventListener("touchend", (e) => {       const touchEndX = e.changedTouches[0].clientX;       const diffX = touchEndX - touchStartX;       if (Math.abs(diffX) > 40) {         if (diffX < 0) moveLightbox(1);  // Swipe Left -> Next         else moveLightbox(-1);           // Swipe Right -> Prev       }     }, { passive: true });   }    // --- CANDLE & CONFETTI LOGIC ---   function blowOutCandles() {     if (candlesBlown) {       showToast("Your wish is already on its way. ♡");       return;     }     $$(".candle").forEach((candle) => candle.classList.remove("lit"));
+  const nextBtn = $("#lightboxNext");    if (closeBtn) closeBtn.addEventListener("click", () => closeLightbox(false));   if (prevBtn) prevBtn.addEventListener("click", () => moveLightbox(-1));   if (nextBtn) nextBtn.addEventListener("click", () => moveLightbox(1));    if (lightbox) {     lightbox.addEventListener("click", (event) => {       if (event.target === lightbox) closeLightbox(false);     });   }    document.addEventListener("keydown", (event) => {     if (!lightbox \vert{}\vert{} lightbox.classList.contains("hidden")) return;     if (event.key === "Escape") closeLightbox(false);     if (event.key === "ArrowLeft") moveLightbox(-1);     if (event.key === "ArrowRight") moveLightbox(1);   });    let touchStartX = 0;   if (lightbox) {     lightbox.addEventListener("touchstart", (e) => {       touchStartX = e.changedTouches[0].clientX;     }, { passive: true });      lightbox.addEventListener("touchend", (e) => {       const touchEndX = e.changedTouches[0].clientX;       const diffX = touchEndX - touchStartX;       if (Math.abs(diffX) > 40) {         if (diffX < 0) moveLightbox(1);         else moveLightbox(-1);       }     }, { passive: true });   }    function blowOutCandles() {     if (candlesBlown) {       showToast("Your wish is already on its way. ♡");       return;     }     $$(".candle").forEach((candle) => candle.classList.remove("lit"));
     candlesBlown = true;
     const instruction = $("#candleInstruction");
     if (instruction) instruction.textContent = "Wish made. Keep it close to your heart. ♡";
@@ -346,21 +346,20 @@
   function initRevealObserver() {
     const items = $$(".reveal");
     if (!("IntersectionObserver" in window)) {
-      items.forEach(item => item.classList.add("visible"));
+      items.forEach((item) => item.classList.add("visible"));
       return;
     }
     const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("visible");
           obs.unobserve(entry.target);
         }
       });
     }, { threshold: 0.12 });
-    items.forEach(item => observer.observe(item));
+    items.forEach((item) => observer.observe(item));
   }
 
-  // --- MUSIC TOGGLE & VISIBILITY STATE ---
   async function toggleMusic() {
     if (!music || !musicToggle) return;
     if (!musicEnabled) {
@@ -396,7 +395,7 @@
     });
   }
 
-  const restartBtn = $("#restartTop");   if (restartBtn) {     restartBtn.addEventListener("click", () => {       const confirmed = window.confirm("Would you like to return to the beginning of your surprise?");       if (!confirmed) return;       closeLightbox(false);       openedSecrets.clear();       makeSecrets();       candlesBlown = false;       $$(".candle").forEach(candle => candle.classList.add("lit"));
+  const restartBtn = $("#restartTop");   if (restartBtn) {     restartBtn.addEventListener("click", () => {       const confirmed = window.confirm("Would you like to return to the beginning of your surprise?");       if (!confirmed) return;       closeLightbox(false);       openedSecrets.clear();       makeSecrets();       candlesBlown = false;       $$(".candle").forEach((candle) => candle.classList.add("lit"));
       const instruction = $("#candleInstruction");
       if (instruction) instruction.textContent = "Tap each little flame to make your wish.";
       const blowBtn = $("#blowCandles");
@@ -421,7 +420,6 @@
     });
   }
 
-  // Initial Setup
   setPersonalContent();
   makeGallery();
   makeSecrets();
