@@ -167,23 +167,25 @@
   if (passwordForm) {
     passwordForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      const entered = passwordInput.value;
+      const entered = passwordInput ? passwordInput.value : "";
       if (entered === String(config.password ?? "love2026")) {
         if (gateError) gateError.textContent = "";
-        passwordInput.setAttribute("aria-invalid", "false");
+        if (passwordInput) passwordInput.setAttribute("aria-invalid", "false");
         unlockSite();
       } else {
         if (gateError) gateError.textContent = "That doesn't seem right. Try your secret password again. ♡";
-        passwordInput.setAttribute("aria-invalid", "true");
-        passwordInput.value = "";
-        passwordInput.focus();
+        if (passwordInput) {
+          passwordInput.setAttribute("aria-invalid", "true");
+          passwordInput.value = "";
+          passwordInput.focus();
+        }
         const card = $(".gate-card");
         card?.animate?.([{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" }, { transform: "translateX(0)" }], { duration: 230 });
       }
     });
   }
 
-  if (togglePassword) {
+  if (togglePassword && passwordInput) {
     togglePassword.addEventListener("click", () => {
       const reveal = passwordInput.type === "password";
       passwordInput.type = reveal ? "text" : "password";
@@ -398,7 +400,7 @@
       const instruction = $("#candleInstruction");
       if (instruction) instruction.textContent = "Tap each little flame to make your wish.";
       const blowBtn = $("#blowCandles");
-      if (blowBtn) blowBtn.classList.remove("hidden");
+      if (blowBtn) blowBtn.classList.add("hidden");
       const wishSuccess = $("#wishSuccess");
       if (wishSuccess) wishSuccess.classList.add("hidden");
       const hiddenMsg = $("#finalHiddenMessage");
