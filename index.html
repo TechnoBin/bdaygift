@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff4f7">
+  <meta name="description" content="A little birthday world made with love.">
+  <title>A Little World Made for You ♡</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/content.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <div class="sparkle-layer" id="sparkleLayer" aria-hidden="true"></div>
+
+  <!-- Password gate: change the password in js/content.js before sharing. -->
+  <section class="gate" id="passwordGate" aria-labelledby="gateTitle">
+    <div class="gate-card">
+      <div class="gate-mark" aria-hidden="true">♡</div>
+      <p class="eyebrow">A LITTLE SURPRISE, JUST FOR YOU</p>
+      <h1 id="gateTitle">Some things are<br><em>meant for your eyes only.</em></h1>
+      <p class="gate-copy">A tiny world of memories, wishes and love is waiting inside.</p>
+      <form id="passwordForm" class="password-form">
+        <label class="sr-only" for="passwordInput">Enter the password</label>
+        <div class="password-field">
+          <input id="passwordInput" type="password" placeholder="Enter your secret password" autocomplete="current-password" required>
+          <button class="eye-button" type="button" id="togglePassword" aria-label="Show password">◉</button>
+        </div>
+        <p class="gate-error" id="gateError" role="alert" aria-live="polite"></p>
+        <button class="button button-primary button-wide" type="submit">Unlock your surprise <span>♡</span></button>
+      </form>
+      <p class="tiny-note"><span>✦</span> Made with a little extra love</p>
+    </div>
+    <div class="gate-flower flower-a" aria-hidden="true">✿</div>
+    <div class="gate-flower flower-b" aria-hidden="true">✧</div>
+  </section>
+
+  <main id="mainSite" class="site hidden" inert>
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="Back to the beginning"><span class="brand-heart">♡</span> little world</a>
+      <div class="topbar-actions">
+        <button class="icon-button music-button" id="musicToggle" type="button" aria-label="Play background music" title="Music on/off">
+          <span class="music-icon" aria-hidden="true">♫</span><span class="music-label">Music</span>
+        </button>
+        <button class="icon-button" id="restartTop" type="button" aria-label="Restart surprise" title="Start over">↻</button>
+      </div>
+    </header>
+
+    <section class="hero section-shell" id="home">
+      <div class="hero-copy reveal">
+        <p class="eyebrow"><span class="eyebrow-line"></span> TODAY IS ALL ABOUT YOU <span class="eyebrow-line"></span></p>
+        <h1>To the girl who makes<br>the world feel <em>softer.</em></h1>
+        <p class="hero-subtitle">A little birthday surprise, wrapped in all the things words don't always know how to say.</p>
+        <a class="button button-primary" href="#letter">Come a little closer <span>↓</span></a>
+        <div class="hero-footnote"><span class="tiny-heart">♡</span> Made especially for <strong id="heroName">my favourite person</strong></div>
+      </div>
+      <div class="hero-art reveal">
+        <div class="hero-halo"></div>
+        <div class="hero-photo-wrap">
+          <img class="hero-photo" src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1000&q=85" alt="Soft romantic birthday flowers and celebration" fetchpriority="high">
+          <div class="photo-caption"><span>for you, always</span><span class="caption-heart">♡</span></div>
+        </div>
+        <div class="floating-note note-one"><span>✿</span> your day</div>
+        <div class="floating-note note-two">made with <span>♥</span></div>
+        <div class="doodle-star star-one">✧</div><div class="doodle-star star-two">✦</div>
+      </div>
+    </section>
+
+    <section class="letter-section section-shell section-pad" id="letter">
+      <div class="section-heading reveal">
+        <p class="eyebrow">A NOTE FROM THE HEART</p>
+        <h2>Before anything else,<br><em>there's this.</em></h2>
+      </div>
+      <article class="letter-card reveal">
+        <div class="letter-top"><span>dear birthday girl,</span><span class="letter-stamp">♡</span></div>
+        <div class="letter-body" id="letterBody">
+          Happy birthday to someone who makes ordinary days feel a little more magical. I hope this new chapter brings you the same warmth, kindness and happiness that you bring into my life. Thank you for being exactly who you are — for the little things you do, the laughs we share, and the memories that somehow become my favourites without even trying.
+
+          Today, I hope you feel celebrated, appreciated and loved in every way you deserve. If I could wrap up one wish for you, it would be that life gives you a thousand reasons to smile — and that I get to be there for many of them.
+
+          Here's to your dreams, your beautiful heart, and all the lovely moments still waiting for us. Happy birthday, my favourite person. ♡
+        </div>
+        <div class="letter-signoff">with all my love, <span id="senderName">someone who adores you</span> <span class="signature-heart">♡</span></div>
+      </article>
+    </section>
+
+    <section class="memories-section section-shell section-pad" id="memories">
+      <div class="section-heading section-heading-row reveal">
+        <div><p class="eyebrow">LITTLE MOMENTS, BIG FEELINGS</p><h2>Our little <em>gallery.</em></h2></div>
+        <p class="section-aside">Tap a photo to open it<br>like a little memory box. <span>↗</span></p>
+      </div>
+      <div class="gallery-grid" id="galleryGrid" aria-label="Photo memories">
+        <!-- Gallery cards are rendered from js/content.js -->
+      </div>
+      <p class="gallery-hint"><span>♡</span> Every picture holds a little piece of a story.</p>
+    </section>
+
+    <section class="wish-section section-shell section-pad" id="wish">
+      <div class="wish-panel reveal">
+        <div class="wish-decoration decor-left" aria-hidden="true">✧</div>
+        <div class="wish-decoration decor-right" aria-hidden="true">♡</div>
+        <p class="eyebrow">MAKE A LITTLE WISH</p>
+        <h2>One candle for every<br><em>beautiful possibility.</em></h2>
+        <p class="wish-intro">Take a breath, close your eyes for a second, and wish for something wonderful.</p>
+        <div class="cake-stage" id="cakeStage">
+          <div class="cake-glow"></div>
+          <div class="candles" id="candles" aria-label="Three birthday candles">
+            <button class="candle lit" type="button" aria-label="Blow out candle one"><span class="flame"></span></button>
+            <button class="candle lit" type="button" aria-label="Blow out candle two"><span class="flame"></span></button>
+            <button class="candle lit" type="button" aria-label="Blow out candle three"><span class="flame"></span></button>
+          </div>
+          <div class="cake cake-top"></div><div class="cake cake-middle"></div><div class="cake cake-bottom"></div>
+          <div class="cake-plate"></div>
+          <div class="cake-sprinkles" aria-hidden="true">· ✦ · ♡ · ✦ ·</div>
+        </div>
+        <p class="candle-instruction" id="candleInstruction">Tap each little flame to make your wish.</p>
+        <button class="button button-primary" id="blowCandles" type="button">Blow out the candles <span>✧</span></button>
+        <p class="wish-success hidden" id="wishSuccess" aria-live="polite">May this year bring you the kind of happiness that stays. ✨</p>
+      </div>
+    </section>
+
+    <section class="secrets-section section-shell section-pad" id="secrets">
+      <div class="section-heading reveal">
+        <p class="eyebrow">PSST… A FEW LITTLE SECRETS</p>
+        <h2>Open these when<br>you need a <em>smile.</em></h2>
+        <p class="section-description">A few things worth saying today — and on every ordinary day, too.</p>
+      </div>
+      <div class="secret-grid" id="secretGrid">
+        <!-- Secret notes are rendered from js/content.js -->
+      </div>
+      <p class="secret-progress" id="secretProgress" aria-live="polite">0 little notes opened</p>
+    </section>
+
+    <section class="final-section section-shell">
+      <div class="final-card reveal">
+        <div class="final-sparkles" aria-hidden="true">✧　♡　✦　♡　✧</div>
+        <p class="eyebrow">ONE LAST THING</p>
+        <h2>Happy birthday,<br><em id="finalName">my favourite person.</em></h2>
+        <p class="final-message" id="finalMessage">I hope you never forget how loved you are. The world is sweeter with you in it, and I hope this little corner of the internet reminds you of that whenever you need it.</p>
+        <button class="button button-light" id="finalReveal" type="button">One last little surprise <span>♡</span></button>
+        <div class="final-hidden-message hidden" id="finalHiddenMessage" aria-live="polite">
+          <span class="final-heart">♥</span>
+          <p>Of all the places and people in this big world, I'm so glad our story found its way to each other.</p>
+          <small>Today, tomorrow, and in all the little moments in between. ♡</small>
+        </div>
+        <div class="final-signature">always a little more love <span>♡</span></div>
+      </div>
+    </section>
+
+    <footer class="footer"><span>made with a full heart</span><span>♡</span><span>just for you</span></footer>
+  </main>
+
+  <!-- Accessible image lightbox -->
+  <div class="lightbox hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close photo">×</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" type="button" aria-label="Previous photo">‹</button>
+    <figure class="lightbox-figure">
+      <img id="lightboxImage" src="" alt="">
+      <figcaption id="lightboxCaption"></figcaption>
+    </figure>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" type="button" aria-label="Next photo">›</button>
+    <p class="lightbox-counter" id="lightboxCounter"></p>
+  </div>
+
+  <audio id="backgroundMusic" loop preload="none">
+    <source src="assets/audio/your-song.mp3" type="audio/mpeg">
+  </audio>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
