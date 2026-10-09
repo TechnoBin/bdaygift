@@ -35,19 +35,19 @@ Here's to your dreams, your beautiful heart, and all the lovely moments still wa
     {
       title: "My favourite kind of beautiful",
       caption: "A little reminder of all things lovely.",
-      src: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&q=85",
+      src: "images/image5.jpg",
       alt: "Pink flowers in soft natural light"
     },
     {
       title: "A memory to smile about",
       caption: "The best moments are often the simplest.",
-      src: "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=1200&q=85",
+      src: "images/image6.jpg",
       alt: "Warm celebration lights"
     },
     {
       title: "More memories, please",
       caption: "Here's to all the lovely ones still to come.",
-      src: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=85",
+      src: "images/image7.jpg",
       alt: "Pastel birthday balloons"
     }
   ],
