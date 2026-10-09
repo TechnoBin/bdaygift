@@ -1,8 +1,7 @@
 (() => {
   "use strict";
   const config = window.BIRTHDAY_CONFIG || {};
-  const $ = (selector, root = document) => root.querySelector(selector);
-  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const $ = (selector, root = document) => root.querySelector(selector);   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
   const gate = $("#passwordGate");
   const mainSite = $("#mainSite");
@@ -136,6 +135,12 @@
     document.body.classList.add("unlocked");
     initRevealObserver();
     createSparkles();
+
+    // Auto-start music on unlock click
+    if (!musicEnabled) {
+      toggleMusic();
+    }
+
     window.setTimeout(() => $("#home").scrollIntoView({ behavior: "smooth", block: "start" }), 60);
   }
 
@@ -213,31 +218,11 @@
 
   $("#lightboxClose").addEventListener("click", closeLightbox);
   $("#lightboxPrev").addEventListener("click", () => moveLightbox(-1));
-  $("#lightboxNext").addEventListener("click", () => moveLightbox(1));
-  lightbox.addEventListener("click", (event) => {
-    if (event.target === lightbox) closeLightbox();
-  });
-  document.addEventListener("keydown", (event) => {
-    if (lightbox.classList.contains("hidden")) return;
-    if (event.key === "Escape") closeLightbox();
-    if (event.key === "ArrowLeft") moveLightbox(-1);
-    if (event.key === "ArrowRight") moveLightbox(1);
-  });
-
-  function blowOutCandles() {
-    if (candlesBlown) {
-      showToast("Your wish is already on its way. ♡");
-      return;
-    }
-    $$(".candle").forEach((candle) => candle.classList.remove("lit"));
+  $("#lightboxNext").addEventListener("click", () => moveLightbox(1));   lightbox.addEventListener("click", (event) => {     if (event.target === lightbox) closeLightbox();   });   document.addEventListener("keydown", (event) => {     if (lightbox.classList.contains("hidden")) return;     if (event.key === "Escape") closeLightbox();     if (event.key === "ArrowLeft") moveLightbox(-1);     if (event.key === "ArrowRight") moveLightbox(1);   });    function blowOutCandles() {     if (candlesBlown) {       showToast("Your wish is already on its way. ♡");       return;     }     $$(".candle").forEach((candle) => candle.classList.remove("lit"));
     candlesBlown = true;
     $("#candleInstruction").textContent = "Wish made. Keep it close to your heart. ♡";
     $("#blowCandles").classList.add("hidden");
-    $("#wishSuccess").classList.remove("hidden");
-    createConfetti();
-    showToast("A little wish, sent with love ✨");
-  }
-  $$(".candle").forEach((candle) => candle.addEventListener("click", () => candle.classList.toggle("lit")));
+    $("#wishSuccess").classList.remove("hidden");     createConfetti();     showToast("A little wish, sent with love ✨");   }   $$(".candle").forEach((candle) => candle.addEventListener("click", () => candle.classList.toggle("lit")));
   $("#blowCandles").addEventListener("click", blowOutCandles);
 
   function createConfetti() {
@@ -308,7 +293,7 @@
         musicToggle.classList.add("music-playing");
         showToast("A little music for your moment ♫");
       } catch (error) {
-        showToast("Add your-song.mp3 to assets/audio to enable music.");
+        showToast("Add song2.mp3 to audio/ to enable music.");
       }
     } else {
       music.pause();
@@ -319,19 +304,12 @@
   }
   musicToggle.addEventListener("click", toggleMusic);
   music.addEventListener("error", () => {
-    if (musicEnabled) showToast("Music file not found. Add your song in assets/audio.");
+    if (musicEnabled) showToast("Music file not found. Check audio/song2.mp3.");
     musicEnabled = false;
     musicToggle.classList.remove("music-playing");
   });
 
-  $("#restartTop").addEventListener("click", () => {
-    const confirmed = window.confirm("Would you like to return to the beginning of your surprise?");
-    if (!confirmed) return;
-    closeLightboxIfOpen();
-    openedSecrets.clear();
-    makeSecrets();
-    candlesBlown = false;
-    $$(".candle").forEach(candle => candle.classList.add("lit"));
+  $("#restartTop").addEventListener("click", () => {     const confirmed = window.confirm("Would you like to return to the beginning of your surprise?");     if (!confirmed) return;     closeLightboxIfOpen();     openedSecrets.clear();     makeSecrets();     candlesBlown = false;     $$(".candle").forEach(candle => candle.classList.add("lit"));
     $("#candleInstruction").textContent = "Tap each little flame to make your wish.";
     $("#blowCandles").classList.remove("hidden");
     $("#wishSuccess").classList.add("hidden");
@@ -355,6 +333,6 @@
   makeGallery();
   makeSecrets();
 
-  // If the visitor has JavaScript disabled, the page won't be able to unlock; focus input for usability.
+  // Focus password input for keyboard navigation.
   passwordInput.focus({ preventScroll: true });
 })();
