@@ -17,19 +17,19 @@ Here's to your dreams, your beautiful heart, and all the lovely moments still wa
     {
       title: "A little moment of magic",
       caption: "Some memories feel like sunshine.",
-      src: "https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1200&q=85",
+      src: "images/image2.jpg",
       alt: "Friends sharing a happy moment"
     },
     {
       title: "The happiest kind of chaos",
       caption: "The little things become the big things.",
-      src: "https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=1200&q=85",
+      src: "images/image3.jpg",
       alt: "Romantic couple holding hands"
     },
     {
       title: "A day worth keeping",
       caption: "If only we could bottle up a feeling.",
-      src: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=1200&q=85",
+      src: "images/image4.jpg",
       alt: "Soft pink flowers"
     },
     {
