@@ -73,7 +73,7 @@
       img.decoding = "async";
       img.addEventListener("error", () => {
         img.removeAttribute("src");
-        img.alt = "Image unavailable — replace this photo in content.js";
+        img.alt = "Image unavailable — replace this photo in js/content.js";
         img.classList.add("image-unavailable");
         button.classList.add("photo-error");
       }, { once: true });
@@ -150,10 +150,6 @@
       mainSite.removeAttribute("inert");
     }
     document.body.classList.add("unlocked");
-    
-    // Ensure all revealed cards turn visible immediately on unlock
-    $$(".reveal").forEach((item) => item.classList.add("visible"));
-    
     initRevealObserver();
     createSparkles();
 
@@ -170,10 +166,8 @@
   if (passwordForm) {
     passwordForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      const entered = passwordInput ? passwordInput.value.trim() : "";
-      const expectedPassword = String(config.password || "birthday");
-
-      if (entered === expectedPassword) {
+      const entered = passwordInput ? passwordInput.value : "";
+      if (entered === String(config.password ?? "love2026")) {
         if (gateError) gateError.textContent = "";
         if (passwordInput) passwordInput.setAttribute("aria-invalid", "false");
         unlockSite();
@@ -236,7 +230,7 @@
 
     preload.onerror = () => {
       lightboxImage.removeAttribute("src");
-      lightboxImage.alt = "This image could not be loaded. Replace its URL in content.js.";
+      lightboxImage.alt = "This image could not be loaded. Replace its URL in js/content.js.";
       lightboxImage.classList.remove("changing");
     };
 
@@ -346,18 +340,18 @@
   function initRevealObserver() {
     const items = $$(".reveal");
     if (!("IntersectionObserver" in window)) {
-      items.forEach((item) => item.classList.add("visible"));
+      items.forEach(item => item.classList.add("visible"));
       return;
     }
     const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach((entry) => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add("visible");
           obs.unobserve(entry.target);
         }
       });
     }, { threshold: 0.12 });
-    items.forEach((item) => observer.observe(item));
+    items.forEach(item => observer.observe(item));
   }
 
   async function toggleMusic() {
@@ -395,7 +389,7 @@
     });
   }
 
-  const restartBtn = $("#restartTop");   if (restartBtn) {     restartBtn.addEventListener("click", () => {       const confirmed = window.confirm("Would you like to return to the beginning of your surprise?");       if (!confirmed) return;       closeLightbox(false);       openedSecrets.clear();       makeSecrets();       candlesBlown = false;       $$(".candle").forEach((candle) => candle.classList.add("lit"));
+  const restartBtn = $("#restartTop");   if (restartBtn) {     restartBtn.addEventListener("click", () => {       const confirmed = window.confirm("Would you like to return to the beginning of your surprise?");       if (!confirmed) return;       closeLightbox(false);       openedSecrets.clear();       makeSecrets();       candlesBlown = false;       $$(".candle").forEach(candle => candle.classList.add("lit"));
       const instruction = $("#candleInstruction");
       if (instruction) instruction.textContent = "Tap each little flame to make your wish.";
       const blowBtn = $("#blowCandles");
