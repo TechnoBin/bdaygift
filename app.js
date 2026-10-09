@@ -476,35 +476,36 @@
 
     
     function closeLightbox(fromPopState = false) {
-    if (!lightbox || lightbox.classList.contains("hidden")) return;
+  if (!lightbox || lightbox.classList.contains("hidden")) return;
 
-    // Pause and clear video player
-    const modalVideo = $("#lightboxVideo");
-    if (modalVideo) {
-      modalVideo.pause();
-      modalVideo.removeAttribute("src");
-      modalVideo.classList.add("hidden");
-    }
-
-    // Resume background audio and sync UI elements
-    resumeMusicAfterVideo();
-
-    if (lightboxImage) lightboxImage.classList.remove("hidden");
-
-    lightbox.classList.add("hidden");
-    document.body.style.overflow = "";
-
-    if (previousFocus && typeof previousFocus.focus === "function") {
-      previousFocus.focus();
-    }
-
-    if (!fromPopState && isPushedState) {
-      isPushedState = false;
-      history.back();
-    } else {
-      isPushedState = false;
-    }
+  // Pause and clear video player
+  const modalVideo = $("#lightboxVideo");
+  if (modalVideo) {
+    modalVideo.pause();
+    modalVideo.removeAttribute("src");
+    modalVideo.classList.add("hidden");
   }
+
+  // Resume background audio and sync UI elements
+  resumeMusicAfterVideo();
+
+  if (lightboxImage) lightboxImage.classList.remove("hidden");
+
+  lightbox.classList.add("hidden");
+  document.body.style.overflow = "";
+
+  if (previousFocus && typeof previousFocus.focus === "function") {
+    previousFocus.focus();
+  }
+
+  if (!fromPopState && isPushedState) {
+    isPushedState = false;
+    history.back();
+  } else {
+    isPushedState = false;
+  }
+}
+
 
 
   const closeButton = $("#lightboxClose");
