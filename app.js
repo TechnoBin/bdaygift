@@ -93,6 +93,125 @@
     }, 2600);
   }
 
+    // --- BIG SCREEN VIDEO LIGHTBOX HANDLER ---
+  const videoCards = $$(".video-card");
+  
+  videoCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      const src = card.getAttribute("data-video-src");
+      const title = card.getAttribute("data-title") || "Memory Video";
+      if (!src || !lightbox) return;
+
+      previousFocus = document.activeElement;
+
+      // Pause background music if playing
+      if (musicEnabled && music) {
+        music.pause();
+      }
+
+      // Hide image element, create or show video player in Lightbox
+      if (lightboxImage) lightboxImage.classList.add("hidden");
+      
+      let modalVideo = $("#lightboxVideo");
+      if (!modalVideo) {
+        modalVideo = document.createElement("video");
+        modalVideo.id = "lightboxVideo";
+        modalVideo.className = "lightbox-video";
+        modalVideo.controls = true;
+        modalVideo.autoplay = true;
+        modalVideo.playsInline = true;
+        $(".lightbox-figure")?.append(modalVideo);
+      } else {
+        modalVideo.classList.remove("hidden");
+      }
+
+      modalVideo.src = src;
+
+      if (lightboxCaption) lightboxCaption.textContent = title;
+      if (lightboxCounter) lightboxCounter.textContent = "Video Clip";
+
+      // Hide photo prev/next buttons for video mode
+      $("#lightboxPrev")?.classList.add("hidden");
+      $("#lightboxNext")?.classList.add("hidden");
+
+      lightbox.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+
+      if (!isPushedState) {
+        history.pushState({ lightboxOpen: true }, "");
+        isPushedState = true;
+      }
+    });
+  });
+
+  // Intercept closing lightbox to stop video & restore image mode
+  const originalCloseLightbox = closeLightbox;
+  closeLightbox = function(fromPopState = false) {
+    const modalVideo = $("#lightboxVideo");
+    if (modalVideo) {
+      modalVideo.pause();
+      modalVideo.removeAttribute("src");
+      modalVideo.classList.add("hidden");
+    }
+    if (lightboxImage) lightboxImage.classList.remove("hidden");
+
+    originalCloseLightbox(fromPopState);
+  };
+  
+  // --- VIDEO LIGHTBOX HANDLER ---
+  function openVideoLightbox(src, title) {
+    if (!src || !lightbox) return;
+
+    previousFocus = document.activeElement;
+
+    // Pause background music if playing
+    if (musicEnabled && music) {
+      music.pause();
+    }
+
+    // Hide image element, create or show video player
+    if (lightboxImage) lightboxImage.classList.add("hidden");
+
+    let modalVideo = $("#lightboxVideo");
+    if (!modalVideo) {
+      modalVideo = document.createElement("video");
+      modalVideo.id = "lightboxVideo";
+      modalVideo.className = "lightbox-video";
+      modalVideo.controls = true;
+      modalVideo.autoplay = true;
+      modalVideo.playsInline = true;
+      $(".lightbox-figure")?.append(modalVideo);
+    } else {
+      modalVideo.classList.remove("hidden");
+    }
+
+    modalVideo.src = src;
+
+    if (lightboxCaption) lightboxCaption.textContent = title;
+    if (lightboxCounter) lightboxCounter.textContent = "Video Clip";
+
+    // Hide photo prev/next buttons in video mode
+    $("#lightboxPrev")?.classList.add("hidden");
+    $("#lightboxNext")?.classList.add("hidden");
+
+    lightbox.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+
+    if (!isPushedState) {
+      history.pushState({ lightboxOpen: true }, "");
+      isPushedState = true;
+    }
+  }
+
+  // Attach click listener to video cards
+  $$(".video-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      const src = card.getAttribute("data-video-src");
+      const title = card.getAttribute("data-title") || "Memory Video";
+      openVideoLightbox(src, title);
+    });
+  });
+  
   // =========================
   // PERSONAL CONTENT
   // =========================
@@ -321,15 +440,24 @@
     renderLightboxPhoto();
   }
 
-  function closeLightbox(fromPopState = false) {
-    if (!lightbox || lightbox.classList.contains("hidden")) {
-      return;
+    function closeLightbox(fromPopState = false) {
+    if (!lightbox || lightbox.classList.contains("hidden")) return;
+
+    // Pause and reset video player if open
+    const modalVideo = $("#lightboxVideo");
+    if (modalVideo) {
+      modalVideo.pause();
+      modalVideo.removeAttribute("src");
+      modalVideo.classList.add("hidden");
     }
+
+    // Restore image element for normal photo viewing
+    if (lightboxImage) lightboxImage.classList.remove("hidden");
 
     lightbox.classList.add("hidden");
     document.body.style.overflow = "";
 
-    if (previousFocus && previousFocus.isConnected) {
+    if (previousFocus && typeof previousFocus.focus === "function") {
       previousFocus.focus();
     }
 
@@ -340,6 +468,7 @@
       isPushedState = false;
     }
   }
+
 
   const closeButton = $("#lightboxClose");
   const prevButton = $("#lightboxPrev");
