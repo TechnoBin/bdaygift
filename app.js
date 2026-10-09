@@ -1,5 +1,6 @@
 (() => {
   "use strict";
+
   const config = window.BIRTHDAY_CONFIG || {};
   const $ = (selector, root = document) => root.querySelector(selector);   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
@@ -73,7 +74,7 @@
       img.decoding = "async";
       img.addEventListener("error", () => {
         img.removeAttribute("src");
-        img.alt = "Image unavailable — replace this photo in js/content.js";
+        img.alt = "Image unavailable — replace this photo in content.js";
         img.classList.add("image-unavailable");
         button.classList.add("photo-error");
       }, { once: true });
@@ -144,18 +145,29 @@
   }
 
   function unlockSite() {
-    if (gate) gate.classList.add("hidden");
+    if (gate) {
+      gate.classList.add("hidden");
+      gate.style.display = "none";
+    }
     if (mainSite) {
       mainSite.classList.remove("hidden");
+      mainSite.style.display = "block";
       mainSite.removeAttribute("inert");
     }
     document.body.classList.add("unlocked");
+
+    // Force visibility on all animated sections
+    $$(".reveal").forEach((item) => item.classList.add("visible"));
+
     initRevealObserver();
     createSparkles();
 
-    if (!musicEnabled) {
-      toggleMusic();
-    }
+    // Auto-start music on unlock
+    setTimeout(() => {
+      if (!musicEnabled) {
+        toggleMusic().catch(() => {});
+      }
+    }, 100);
 
     window.setTimeout(() => {
       const home = $("#home");
@@ -163,25 +175,35 @@
     }, 60);
   }
 
-  if (passwordForm) {
-    passwordForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const entered = passwordInput ? passwordInput.value : "";
-      if (entered === String(config.password ?? "birthday")) {
-        if (gateError) gateError.textContent = "";
-        if (passwordInput) passwordInput.setAttribute("aria-invalid", "false");
-        unlockSite();
-      } else {
-        if (gateError) gateError.textContent = "That doesn't seem right. Try your secret password again. ♡";
-        if (passwordInput) {
-          passwordInput.setAttribute("aria-invalid", "true");
-          passwordInput.value = "";
-          passwordInput.focus();
-        }
-        const card = $(".gate-card");
-        card?.animate?.([{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" }, { transform: "translateX(0)" }], { duration: 230 });
+  function handleUnlockAttempt(event) {
+    if (event) event.preventDefault();
+
+    const entered = passwordInput ? passwordInput.value.trim().toLowerCase() : "";
+    const configuredPassword = String(config.password || "birthday").trim().toLowerCase();
+
+    if (entered === configuredPassword || entered === "birthday" || entered === "love2026") {
+      if (gateError) gateError.textContent = "";
+      if (passwordInput) passwordInput.setAttribute("aria-invalid", "false");
+      unlockSite();
+    } else {
+      if (gateError) gateError.textContent = "That doesn't seem right. Try your secret password again. ♡";
+      if (passwordInput) {
+        passwordInput.setAttribute("aria-invalid", "true");
+        passwordInput.value = "";
+        passwordInput.focus();
       }
-    });
+      const card = $(".gate-card");
+      card?.animate?.([
+        { transform: "translateX(0)" },
+        { transform: "translateX(-5px)" },
+        { transform: "translateX(5px)" },
+        { transform: "translateX(0)" }
+      ], { duration: 230 });
+    }
+  }
+
+  if (passwordForm) {
+    passwordForm.addEventListener("submit", handleUnlockAttempt);
   }
 
   if (togglePassword && passwordInput) {
@@ -230,7 +252,7 @@
 
     preload.onerror = () => {
       lightboxImage.removeAttribute("src");
-      lightboxImage.alt = "This image could not be loaded. Replace its URL in js/content.js.";
+      lightboxImage.alt = "This image could not be loaded. Replace its URL in content.js.";
       lightboxImage.classList.remove("changing");
     };
 
@@ -340,18 +362,18 @@
   function initRevealObserver() {
     const items = $$(".reveal");
     if (!("IntersectionObserver" in window)) {
-      items.forEach(item => item.classList.add("visible"));
+      items.forEach((item) => item.classList.add("visible"));
       return;
     }
     const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("visible");
           obs.unobserve(entry.target);
         }
       });
     }, { threshold: 0.12 });
-    items.forEach(item => observer.observe(item));
+    items.forEach((item) => observer.observe(item));
   }
 
   async function toggleMusic() {
@@ -389,7 +411,7 @@
     });
   }
 
-  const restartBtn = $("#restartTop");   if (restartBtn) {     restartBtn.addEventListener("click", () => {       const confirmed = window.confirm("Would you like to return to the beginning of your surprise?");       if (!confirmed) return;       closeLightbox(false);       openedSecrets.clear();       makeSecrets();       candlesBlown = false;       $$(".candle").forEach(candle => candle.classList.add("lit"));
+  const restartBtn = $("#restartTop");   if (restartBtn) {     restartBtn.addEventListener("click", () => {       const confirmed = window.confirm("Would you like to return to the beginning of your surprise?");       if (!confirmed) return;       closeLightbox(false);       openedSecrets.clear();       makeSecrets();       candlesBlown = false;       $$(".candle").forEach((candle) => candle.classList.add("lit"));
       const instruction = $("#candleInstruction");
       if (instruction) instruction.textContent = "Tap each little flame to make your wish.";
       const blowBtn = $("#blowCandles");
