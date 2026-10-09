@@ -27,7 +27,7 @@
   let musicEnabled = false;
   let candlesBlown = false;
   let openedSecrets = new Set();
-  let isPushedState = false;
+  let isPushedState = false; // Tracks browser history state for lightbox
 
   function safeText(value, fallback = "") {
     return typeof value === "string" && value.trim() ? value.trim() : fallback;
@@ -153,6 +153,7 @@
     initRevealObserver();
     createSparkles();
 
+    // Auto-start music on unlock click
     if (!musicEnabled) {
       toggleMusic();
     }
@@ -166,25 +167,23 @@
   if (passwordForm) {
     passwordForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      const entered = passwordInput ? passwordInput.value : "";
+      const entered = passwordInput.value;
       if (entered === String(config.password ?? "love2026")) {
         if (gateError) gateError.textContent = "";
-        if (passwordInput) passwordInput.setAttribute("aria-invalid", "false");
+        passwordInput.setAttribute("aria-invalid", "false");
         unlockSite();
       } else {
         if (gateError) gateError.textContent = "That doesn't seem right. Try your secret password again. ♡";
-        if (passwordInput) {
-          passwordInput.setAttribute("aria-invalid", "true");
-          passwordInput.value = "";
-          passwordInput.focus();
-        }
+        passwordInput.setAttribute("aria-invalid", "true");
+        passwordInput.value = "";
+        passwordInput.focus();
         const card = $(".gate-card");
         card?.animate?.([{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" }, { transform: "translateX(0)" }], { duration: 230 });
       }
     });
   }
 
-  if (togglePassword && passwordInput) {
+  if (togglePassword) {
     togglePassword.addEventListener("click", () => {
       const reveal = passwordInput.type === "password";
       passwordInput.type = reveal ? "text" : "password";
@@ -192,6 +191,7 @@
     });
   }
 
+  // --- LIGHTBOX WITH BACK-BUTTON (HISTORY API) & SMOOTH SLIDE ---
   function openLightbox(index) {
     const photos = Array.isArray(config.photos) ? config.photos : [];
     if (!photos.length || !photos[index] || !lightbox) return;
@@ -203,6 +203,7 @@
     lightbox.classList.remove("hidden");
     document.body.style.overflow = "hidden";
 
+    // Push history state so physical browser/phone Back button closes the lightbox
     if (!isPushedState) {
       history.pushState({ lightboxOpen: true }, "");
       isPushedState = true;
@@ -217,6 +218,7 @@
     const photo = photos[activePhoto];
     if (!photo || !lightboxImage) return;
 
+    // Trigger smooth fade transition
     lightboxImage.classList.add("changing");
 
     const nextSrc = safeText(photo.src);
@@ -268,6 +270,7 @@
       previousFocus.focus();
     }
 
+    // If closed via UI (X button, overlay click, ESC), sync the history state back
     if (!fromPopState && isPushedState) {
       isPushedState = false;
       history.back();
@@ -276,15 +279,16 @@
     }
   }
 
+  // Intercept back button / swipe-back gesture
   window.addEventListener("popstate", () => {
     if (lightbox && !lightbox.classList.contains("hidden")) {
-      closeLightbox(true);
+      closeLightbox(true); // Close lightbox via browser back
     }
   });
 
   const closeBtn = $("#lightboxClose");
   const prevBtn = $("#lightboxPrev");
-  const nextBtn = $("#lightboxNext");    if (closeBtn) closeBtn.addEventListener("click", () => closeLightbox(false));   if (prevBtn) prevBtn.addEventListener("click", () => moveLightbox(-1));   if (nextBtn) nextBtn.addEventListener("click", () => moveLightbox(1));    if (lightbox) {     lightbox.addEventListener("click", (event) => {       if (event.target === lightbox) closeLightbox(false);     });   }    document.addEventListener("keydown", (event) => {     if (!lightbox \vert{}\vert{} lightbox.classList.contains("hidden")) return;     if (event.key === "Escape") closeLightbox(false);     if (event.key === "ArrowLeft") moveLightbox(-1);     if (event.key === "ArrowRight") moveLightbox(1);   });    let touchStartX = 0;   if (lightbox) {     lightbox.addEventListener("touchstart", (e) => {       touchStartX = e.changedTouches[0].clientX;     }, { passive: true });      lightbox.addEventListener("touchend", (e) => {       const touchEndX = e.changedTouches[0].clientX;       const diffX = touchEndX - touchStartX;       if (Math.abs(diffX) > 40) {         if (diffX < 0) moveLightbox(1);         else moveLightbox(-1);       }     }, { passive: true });   }    function blowOutCandles() {     if (candlesBlown) {       showToast("Your wish is already on its way. ♡");       return;     }     $$(".candle").forEach((candle) => candle.classList.remove("lit"));
+  const nextBtn = $("#lightboxNext");    if (closeBtn) closeBtn.addEventListener("click", () => closeLightbox(false));   if (prevBtn) prevBtn.addEventListener("click", () => moveLightbox(-1));   if (nextBtn) nextBtn.addEventListener("click", () => moveLightbox(1));    if (lightbox) {     lightbox.addEventListener("click", (event) => {       if (event.target === lightbox) closeLightbox(false);     });   }    document.addEventListener("keydown", (event) => {     if (!lightbox \vert{}\vert{} lightbox.classList.contains("hidden")) return;     if (event.key === "Escape") closeLightbox(false);     if (event.key === "ArrowLeft") moveLightbox(-1);     if (event.key === "ArrowRight") moveLightbox(1);   });    // Touch Swipe Gesture Support for Mobile   let touchStartX = 0;   if (lightbox) {     lightbox.addEventListener("touchstart", (e) => {       touchStartX = e.changedTouches[0].clientX;     }, { passive: true });      lightbox.addEventListener("touchend", (e) => {       const touchEndX = e.changedTouches[0].clientX;       const diffX = touchEndX - touchStartX;       if (Math.abs(diffX) > 40) {         if (diffX < 0) moveLightbox(1);  // Swipe Left -> Next         else moveLightbox(-1);           // Swipe Right -> Prev       }     }, { passive: true });   }    // --- CANDLE & CONFETTI LOGIC ---   function blowOutCandles() {     if (candlesBlown) {       showToast("Your wish is already on its way. ♡");       return;     }     $$(".candle").forEach((candle) => candle.classList.remove("lit"));
     candlesBlown = true;
     const instruction = $("#candleInstruction");
     if (instruction) instruction.textContent = "Wish made. Keep it close to your heart. ♡";
@@ -354,6 +358,7 @@
     items.forEach(item => observer.observe(item));
   }
 
+  // --- MUSIC TOGGLE & VISIBILITY STATE ---
   async function toggleMusic() {
     if (!music || !musicToggle) return;
     if (!musicEnabled) {
@@ -393,7 +398,7 @@
       const instruction = $("#candleInstruction");
       if (instruction) instruction.textContent = "Tap each little flame to make your wish.";
       const blowBtn = $("#blowCandles");
-      if (blowBtn) blowBtn.classList.add("hidden");
+      if (blowBtn) blowBtn.classList.remove("hidden");
       const wishSuccess = $("#wishSuccess");
       if (wishSuccess) wishSuccess.classList.add("hidden");
       const hiddenMsg = $("#finalHiddenMessage");
@@ -414,6 +419,7 @@
     });
   }
 
+  // Initial Setup
   setPersonalContent();
   makeGallery();
   makeSecrets();
