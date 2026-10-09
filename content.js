@@ -3,7 +3,7 @@
    to the public source can inspect it. Do not put sensitive photos/messages in a
    public repository if you need true privacy. */
 window.BIRTHDAY_CONFIG = {
-  password: "love2026",
+  password: "birthday",
   birthdayName: "my favourite person",
   senderName: "someone who adores you",
   finalName: "my favourite person.",
