@@ -6,13 +6,13 @@ window.BIRTHDAY_CONFIG = {
   password: "111008",
   birthdayName: "Srijuu..",
   senderName: "someone who adores you",
-  finalName: "my favourite person.",
+  finalName: "Srijuu..",
   finalMessage: "I hope you never forget how loved you are. The world is sweeter with you in it, and I hope this little corner of the internet reminds you of that whenever you need it.",
-  letter: `Happy birthday to someone who makes ordinary days feel a little more magical. I hope this new chapter brings you the same warmth, kindness and happiness that you bring into my life. Thank you for being exactly who you are — for the little things you do, the laughs we share, and the memories that somehow become my favourites without even trying.
+  letter: `Happy birthday to someone who makes ordinary days feel a little more magical. I hope this new chapter brings you the same warmth, kindness and happiness that you bring into my life. Thank you for being exactly who you are for the little things you do, the laughs we share, and the memories that somehow become my favourites without even trying.
 
-Today, I hope you feel celebrated, appreciated and loved in every way you deserve. If I could wrap up one wish for you, it would be that life gives you a thousand reasons to smile — and that I get to be there for many of them.
+Today, I hope you feel celebrated, appreciated and loved in every way you deserve. If I could wrap up one wish for you, it would be that life gives you a thousand reasons to smile and that I get to be there for many of them.
 
-Here's to your dreams, your beautiful heart, and all the lovely moments still waiting for us. Happy birthday, my favourite person. ♡`,
+Here's to your dreams, your beautiful heart, and all the lovely moments still waiting for us. Happy birthday, Sriju ♡`,
   photos: [
     {
       title: "A little moment of magic",
