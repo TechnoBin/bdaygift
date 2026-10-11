@@ -53,6 +53,7 @@
   let previousFocus = null;
   let toastTimer = null;
   let musicEnabled = false;
+  let wasMusicPlayingBeforeVideo = false; // Tracks music state before video launch
   let candlesBlown = false;
   let isPushedState = false;
 
@@ -93,6 +94,89 @@
     }, 2600);
   }
 
+    // --- BACKGROUND MUSIC MEDIA CONTROLLER ---
+  function pauseMusicForVideo() {
+    if (music && !music.paused) {
+      wasMusicPlayingBeforeVideo = true;
+      music.pause();
+    } else {
+      wasMusicPlayingBeforeVideo = false;
+    }
+  }
+
+  function resumeMusicAfterVideo() {
+    if (wasMusicPlayingBeforeVideo && music) {
+      const playPromise = music.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            musicEnabled = true;
+            if (musicToggle) musicToggle.classList.add("music-playing");
+            if (musicLabel) musicLabel.textContent = "Music ON";
+            if (musicIcon) musicIcon.textContent = "♫";
+          })
+          .catch(() => {
+            musicEnabled = false;
+            if (musicToggle) musicToggle.classList.remove("music-playing");
+            if (musicLabel) musicLabel.textContent = "Music OFF";
+            if (musicIcon) musicIcon.textContent = "🔇";
+          });
+      }
+      wasMusicPlayingBeforeVideo = false;
+    }
+  }
+
+  
+// --- VIDEO LIGHTBOX HANDLER ---
+  function openVideoLightbox(src, title) {
+    if (!src || !lightbox) return;
+
+    previousFocus = document.activeElement;
+
+    // Safely pause background music and save active playback state
+    pauseMusicForVideo();
+
+    if (lightboxImage) lightboxImage.classList.add("hidden");
+
+    let modalVideo = $("#lightboxVideo");
+    if (!modalVideo) {
+      modalVideo = document.createElement("video");
+      modalVideo.id = "lightboxVideo";
+      modalVideo.className = "lightbox-video";
+      modalVideo.controls = true;
+      modalVideo.autoplay = true;
+      modalVideo.playsInline = true;
+      $(".lightbox-figure")?.append(modalVideo);
+    } else {
+      modalVideo.classList.remove("hidden");
+    }
+
+    modalVideo.src = src;
+
+    if (lightboxCaption) lightboxCaption.textContent = title;
+    if (lightboxCounter) lightboxCounter.textContent = "Video Clip";
+
+    $("#lightboxPrev")?.classList.add("hidden");
+    $("#lightboxNext")?.classList.add("hidden");
+
+    lightbox.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+
+    if (!isPushedState) {
+      history.pushState({ lightboxOpen: true }, "");
+      isPushedState = true;
+    }
+  }
+
+  // Attach click listener to video cards
+  $$(".video-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      const src = card.getAttribute("data-video-src");
+      const title = card.getAttribute("data-title") || "Memory Video";
+      openVideoLightbox(src, title);
+    });
+  });
+  
   // =========================
   // PERSONAL CONTENT
   // =========================
@@ -321,25 +405,39 @@
     renderLightboxPhoto();
   }
 
-  function closeLightbox(fromPopState = false) {
-    if (!lightbox || lightbox.classList.contains("hidden")) {
-      return;
-    }
+    
+    function closeLightbox(fromPopState = false) {
+  if (!lightbox || lightbox.classList.contains("hidden")) return;
 
-    lightbox.classList.add("hidden");
-    document.body.style.overflow = "";
-
-    if (previousFocus && previousFocus.isConnected) {
-      previousFocus.focus();
-    }
-
-    if (!fromPopState && isPushedState) {
-      isPushedState = false;
-      history.back();
-    } else {
-      isPushedState = false;
-    }
+  // Pause and clear video player
+  const modalVideo = $("#lightboxVideo");
+  if (modalVideo) {
+    modalVideo.pause();
+    modalVideo.removeAttribute("src");
+    modalVideo.classList.add("hidden");
   }
+
+  // Resume background audio and sync UI elements
+  resumeMusicAfterVideo();
+
+  if (lightboxImage) lightboxImage.classList.remove("hidden");
+
+  lightbox.classList.add("hidden");
+  document.body.style.overflow = "";
+
+  if (previousFocus && typeof previousFocus.focus === "function") {
+    previousFocus.focus();
+  }
+
+  if (!fromPopState && isPushedState) {
+    isPushedState = false;
+    history.back();
+  } else {
+    isPushedState = false;
+  }
+}
+
+
 
   const closeButton = $("#lightboxClose");
   const prevButton = $("#lightboxPrev");
